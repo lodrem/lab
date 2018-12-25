@@ -22,11 +22,7 @@ impl Solution {
         let mut tail = &mut head;
         let mut carry = 0;
 
-        loop {
-            if l1.is_none() && l2.is_none() && carry == 0 {
-                break;
-            }
-
+        while l1.is_some() || l2.is_some() || carry > 0 {
             let sum = {
                 let val1 = match l1.as_ref() {
                     Some(l1) => l1.val,
