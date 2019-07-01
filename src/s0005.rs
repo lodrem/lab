@@ -1,84 +1,84 @@
 pub struct Solution;
 
 impl Solution {
-    #[inline]
-    fn expand_around_center(s: &[u8], left_idx: usize, right_idx: usize) -> (usize, usize) {
-        let mut start_idx = left_idx as i64;
-        let mut end_idx = right_idx;
+  #[inline]
+  fn expand_around_center(s: &[u8], left_idx: usize, right_idx: usize) -> (usize, usize) {
+    let mut start_idx = left_idx as i64;
+    let mut end_idx = right_idx;
 
-        while start_idx >= 0 && end_idx < s.len() && s[start_idx as usize] == s[end_idx] {
-            start_idx -= 1;
-            end_idx += 1;
-        }
-
-        ((start_idx + 1) as usize, end_idx - 1)
+    while start_idx >= 0 && end_idx < s.len() && s[start_idx as usize] == s[end_idx] {
+      start_idx -= 1;
+      end_idx += 1;
     }
 
-    pub fn longest_palindrome(s: String) -> String {
-        if s.is_empty() {
-            return s;
-        }
+    ((start_idx + 1) as usize, end_idx - 1)
+  }
 
-        let mut start_idx = 0;
-        let mut end_idx = 0;
-
-        let chars = s.as_bytes();
-
-        for i in 0..chars.len() {
-            {
-                let (start, end) = Self::expand_around_center(&chars, i, i);
-                if end - start > end_idx - start_idx {
-                    end_idx = end;
-                    start_idx = start;
-                }
-            }
-
-            if i + 1 < chars.len() && chars[i] == chars[i + 1] {
-                let (start, end) = Self::expand_around_center(&chars, i, i + 1);
-                if end - start > end_idx - start_idx {
-                    end_idx = end;
-                    start_idx = start;
-                }
-            }
-
-            if end_idx - start_idx > 2 * (chars.len() - i) {
-                break;
-            }
-        }
-
-        (&s[start_idx..end_idx + 1]).to_owned()
+  #[allow(dead_code)]
+  pub fn longest_palindrome(s: String) -> String {
+    if s.is_empty() {
+      return s;
     }
+
+    let mut start_idx = 0;
+    let mut end_idx = 0;
+
+    let chars = s.as_bytes();
+
+    for i in 0..chars.len() {
+      {
+        let (start, end) = Self::expand_around_center(&chars, i, i);
+        if end - start > end_idx - start_idx {
+          end_idx = end;
+          start_idx = start;
+        }
+      }
+
+      if i + 1 < chars.len() && chars[i] == chars[i + 1] {
+        let (start, end) = Self::expand_around_center(&chars, i, i + 1);
+        if end - start > end_idx - start_idx {
+          end_idx = end;
+          start_idx = start;
+        }
+      }
+      if end_idx - start_idx > 2 * (chars.len() - i) {
+        break;
+      }
+    }
+
+    (&s[start_idx..end_idx + 1]).to_owned()
+  }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Solution;
+  use super::Solution;
 
-    #[test]
-    fn it_works() {
-        assert_eq!(Solution::longest_palindrome("".to_owned()), "".to_owned());
+  #[test]
+  fn it_works() {
+    assert_eq!(Solution::longest_palindrome("".to_owned()), "".to_owned());
 
-        assert_eq!(
-            Solution::longest_palindrome("abcd".to_owned()),
-            "a".to_owned()
-        );
+    assert_eq!(
+      Solution::longest_palindrome("abcd".to_owned()),
+      "a".to_owned()
+    );
 
-        assert_eq!(
-            Solution::longest_palindrome("bbb".to_owned()),
-            "bbb".to_owned()
-        );
+    assert_eq!(
+      Solution::longest_palindrome("bbb".to_owned()),
+      "bbb".to_owned()
+    );
 
-        assert_eq!(
-            Solution::longest_palindrome("babad".to_owned()),
-            "bab".to_owned()
-        );
+    assert_eq!(
+      Solution::longest_palindrome("babad".to_owned()),
+      "bab".to_owned()
+    );
 
-        assert_eq!(
-            Solution::longest_palindrome("cbbd".to_owned()),
-            "bb".to_owned()
-        );
+    assert_eq!(
+      Solution::longest_palindrome("cbbd".to_owned()),
+      "bb".to_owned()
+    );
 
-        assert_eq!(Solution::longest_palindrome("321012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210123210012321001232100123210123".to_owned()),
+    assert_eq!(Solution::longest_palindrome("321012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210123210012321001232100123210123".to_owned()),
                    "321012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210012321001232100123210123".to_owned())
-    }
+  }
 }
