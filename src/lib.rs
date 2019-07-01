@@ -6,6 +6,7 @@ mod s0005;
 mod s0006;
 mod s0007;
 mod s0015;
+mod s0016;
 
 #[cfg(test)]
 mod tests {
