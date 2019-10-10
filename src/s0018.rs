@@ -66,13 +66,13 @@ mod tests {
     fn it_works() {
         {
             let actual = Solution::four_sum(vec![1, 0, -1, 0, -2, 2], 0);
-            let expected = vec![vec![-2, -1, 1, 2], vec![-2, 0, 0, 2], vec![-1, 0, 0, 1]];
+            let expected = vec![vec![2, 1, -1, -2], vec![2, 0, 0, -2], vec![1, 0, 0, -1]];
 
             assert_eq!(expected, actual);
         }
         {
             let actual = Solution::four_sum(vec![1, -2, -5, -4, -3, 3, 3, 5], -11);
-            let expected = vec![vec![-5, -4, -3, 1]];
+            let expected = vec![vec![1, -3, -4, -5]];
             assert_eq!(expected, actual);
         }
     }

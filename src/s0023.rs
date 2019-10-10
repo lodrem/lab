@@ -5,6 +5,7 @@ pub struct ListNode {
 }
 
 impl ListNode {
+    #[allow(dead_code)]
     #[inline]
     fn new(val: i32) -> Self {
         ListNode { next: None, val }
@@ -14,6 +15,7 @@ impl ListNode {
 struct Solution;
 
 impl Solution {
+    #[allow(dead_code)]
     pub fn priority_queue_merge_k_lists(
         mut lists: Vec<Option<Box<ListNode>>>,
     ) -> Option<Box<ListNode>> {
@@ -56,6 +58,7 @@ impl Solution {
         head
     }
 
+    #[allow(dead_code)]
     pub fn brute_force_merge_k_lists(
         mut lists: Vec<Option<Box<ListNode>>>,
     ) -> Option<Box<ListNode>> {

@@ -1,6 +1,7 @@
 pub struct Solution;
 
 impl Solution {
+    #[allow(dead_code)]
     pub fn climb_stairs(n: i32) -> i32 {
         if n == 1 {
             return 1;

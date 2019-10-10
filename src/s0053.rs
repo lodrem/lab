@@ -1,11 +1,13 @@
 pub struct Solution;
 
 impl Solution {
+    #[allow(dead_code)]
     pub fn max_sub_array(nums: Vec<i32>) -> i32 {
         Self::solve_by_dp(nums)
     }
 
     // Greedy
+    #[allow(dead_code)]
     pub fn solve_by_greedy(nums: Vec<i32>) -> i32 {
         let mut result = nums[0];
         let mut sum = 0;
@@ -27,6 +29,7 @@ impl Solution {
 
     // Dynamic Programming
     // f(i) = (f(i - 1) > 0 ? f(i - 1) : 0) + A[i]
+    #[allow(dead_code)]
     pub fn solve_by_dp(nums: Vec<i32>) -> i32 {
         let mut f = vec![0; nums.len()];
         let mut result = nums[0];

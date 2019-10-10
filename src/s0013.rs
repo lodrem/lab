@@ -1,6 +1,7 @@
 pub struct Solution;
 
 impl Solution {
+    #[allow(dead_code)]
     pub fn roman_to_int(s: String) -> i32 {
         let mut result = 0;
         let mut skipped = false;
