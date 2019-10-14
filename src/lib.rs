@@ -16,6 +16,7 @@ mod s0022;
 mod s0023;
 mod s0053;
 mod s0070;
+mod s0866;
 
 #[cfg(test)]
 mod tests {
