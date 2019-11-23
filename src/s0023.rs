@@ -136,8 +136,7 @@ mod tests {
 
         let mut output = Solution::brute_force_merge_k_lists(input);
 
-        while let Some(node) = output.as_ref() {
-            println!("{}->", node.val);
+        while let Some(_) = output.as_ref() {
             output = output.unwrap().next;
         }
     }
