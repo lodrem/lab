@@ -20,6 +20,7 @@ mod s0053;
 mod s0070;
 mod s0146;
 mod s0460;
+mod s0588;
 mod s0866;
 
 #[cfg(test)]
