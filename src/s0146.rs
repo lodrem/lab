@@ -33,27 +33,27 @@ pub struct LRUCache {
  */
 #[allow(dead_code)]
 impl LRUCache {
-    fn push(&mut self, node: Rc<RefCell<LRUEntry>>) {
-        node.borrow_mut().prev = Some(self.head.clone());
-        node.borrow_mut().next = self.head.borrow().next.clone();
+    fn push(&mut self, entry: Rc<RefCell<LRUEntry>>) {
+        entry.borrow_mut().prev = Some(self.head.clone());
+        entry.borrow_mut().next = self.head.borrow().next.clone();
 
-        self.head.borrow().next.as_ref().unwrap().borrow_mut().prev = Some(node.clone());
-        self.head.borrow_mut().next = Some(node);
+        self.head.borrow().next.as_ref().unwrap().borrow_mut().prev = Some(entry.clone());
+        self.head.borrow_mut().next = Some(entry);
     }
 
-    fn detach(&mut self, node: Rc<RefCell<LRUEntry>>) {
-        let prev_node = node.borrow().prev.as_ref().unwrap().clone();
-        let next_node = node.borrow().next.as_ref().unwrap().clone();
+    fn detach(&mut self, entry: Rc<RefCell<LRUEntry>>) {
+        let prev_entry = entry.borrow().prev.as_ref().unwrap().clone();
+        let next_entry = entry.borrow().next.as_ref().unwrap().clone();
 
-        prev_node.borrow_mut().next = Some(next_node.clone());
-        next_node.borrow_mut().prev = Some(prev_node);
+        prev_entry.borrow_mut().next = Some(next_entry.clone());
+        next_entry.borrow_mut().prev = Some(prev_entry);
     }
 
     fn pop(&mut self) -> Rc<RefCell<LRUEntry>> {
-        let tail_node = self.tail.borrow().prev.clone().unwrap();
+        let tail_entry = self.tail.borrow().prev.clone().unwrap();
 
-        self.detach(tail_node.clone());
-        tail_node
+        self.detach(tail_entry.clone());
+        tail_entry
     }
 
     pub fn new(capacity: i32) -> Self {
@@ -73,12 +73,12 @@ impl LRUCache {
 
     pub fn get(&mut self, key: i32) -> i32 {
         match self.storage.get(&key).cloned() {
-            Some(node) => {
-                let value = node.borrow().value;
+            Some(entry) => {
+                let value = entry.borrow().value;
 
-                // Update node lru
-                self.detach(node.clone());
-                self.push(node);
+                // Update entry lru
+                self.detach(entry.clone());
+                self.push(entry);
 
                 value
             }
@@ -88,18 +88,18 @@ impl LRUCache {
 
     pub fn put(&mut self, key: i32, value: i32) {
         match self.storage.get(&key).cloned() {
-            Some(node) => {
-                node.borrow_mut().value = value;
+            Some(entry) => {
+                entry.borrow_mut().value = value;
 
-                // Update node lru
-                self.detach(node.clone());
-                self.push(node);
+                // Update entry lru
+                self.detach(entry.clone());
+                self.push(entry);
             }
             _ => {
-                let node = Rc::new(RefCell::new(LRUEntry::new(key, value)));
+                let entry = Rc::new(RefCell::new(LRUEntry::new(key, value)));
 
-                self.storage.insert(key, node.clone());
-                self.push(node);
+                self.storage.insert(key, entry.clone());
+                self.push(entry);
 
                 if self.storage.len() > self.capacity {
                     let tail = self.pop();
