@@ -21,9 +21,11 @@ mod s0070;
 mod s0146;
 mod s0200;
 mod s0202;
+mod s0238;
 mod s0460;
 mod s0588;
 mod s0866;
+mod s1192;
 
 #[cfg(test)]
 mod tests {
