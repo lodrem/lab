@@ -2,27 +2,31 @@ pub struct Solution;
 
 #[allow(dead_code)]
 impl Solution {
+    fn max_profit_with_max_transaction(max_transaction: usize, prices: Vec<i32>) -> i32 {
+        if prices.is_empty() {
+            return 0;
+        }
+
+        // dp[k, i] = max(dp[k, i-1], prices[i] - prices[j] + dp[k-1, j-1]), j=[1..i]
+
+        let mut dp = vec![vec![0; prices.len()]; max_transaction + 1];
+
+        for k in 1..dp.len() {
+            let mut min = prices[0];
+            for i in 1..prices.len() {
+                min = std::cmp::min(min, prices[i] - dp[k - 1][i - 1]);
+                dp[k][i] = std::cmp::max(dp[k][i - 1], prices[i] - min);
+            }
+        }
+
+        dp[max_transaction][prices.len() - 1]
+    }
+
     pub fn max_profit(prices: Vec<i32>) -> i32 {
-        // dp[i] = max(dp[i-1], prices[i] - prices[j] + dp[j-2]), j=[0..i-1]
+        const MAX_TRANSACTION: usize = 2;
 
-        let mut dp = vec![0; prices.len()];
-
-        for i in 1..prices.len() {
-        }
-
-        use std::cmp::max;
-
-        let mut hold1 = std::i32::MIN;
-        let mut hold2 = std::i32::MIN;
-        let mut release1 = 0;
-        let mut release2 = 0;
-        for price in prices {
-            release2 = max(release2, hold2 + price);
-            hold2 = max(hold2, release1 - price);
-            release1 = max(release1, hold1 + price);
-            hold1 = max(hold1, -price);
-        }
-        release2
+        // calculate max profit with max k transactions
+        Self::max_profit_with_max_transaction(MAX_TRANSACTION, prices)
     }
 }
 
