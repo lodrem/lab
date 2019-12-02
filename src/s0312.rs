@@ -3,30 +3,32 @@ pub struct Solution;
 #[allow(dead_code)]
 impl Solution {
     pub fn max_coins(nums: Vec<i32>) -> i32 {
-        // nums[left] * nums[i] * nums[right] + dp(left, i) + dp(i, right)
-        // f[i] = max(f[i-1], p[i-1] * p[i] * p[i+1] + f[i-2])
-
-        if nums.len() <= 3 {
-            let mut coins = 1;
+        let nums = {
+            let mut n = vec![0; nums.len() + 2];
             for i in 0..nums.len() {
-                coins *= nums[i];
+                n[i + 1] = nums[i];
             }
-            return coins;
+            n[0] = 1;
+            n[nums.len() + 1] = 1;
+
+            n
+        };
+
+        // f[i][j] = max(f[i][k-1] + nums[i-1] * nums[k] * nums[j+1] + f[k+1][j]), i <= k <= j
+        let mut f = vec![vec![0; nums.len()]; nums.len()];
+
+        for right in 2..nums.len() {
+            for left in (0..right - 1).rev() {
+                for i in left + 1..right {
+                    f[left][right] = std::cmp::max(
+                        f[left][right],
+                        nums[left] * nums[i] * nums[right] + f[left][i] + f[i][right],
+                    )
+                }
+            }
         }
 
-        let mut f = vec![0; nums.len()];
-
-        f[0] = nums[0] * nums[1];
-        f[1] = nums[0] * nums[1] * nums[2];
-
-        for i in 2..nums.len() {
-            let next = if i + 1 < nums.len() { nums[i + 1] } else { 1 };
-            let p = nums[i - 1] * nums[i] * next;
-
-            f[i] = std::cmp::max(f[i - 1], p + f[i - 2]);
-        }
-
-        f[f.len() - 1]
+        f[0][f.len() - 1]
     }
 }
 
