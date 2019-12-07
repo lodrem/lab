@@ -3,52 +3,53 @@ pub struct Solution;
 #[allow(dead_code)]
 impl Solution {
     pub fn maximal_rectangle(matrix: Vec<Vec<char>>) -> i32 {
-        if matrix.len() == 0 {
+        if matrix.is_empty() {
             return 0;
-        };
-        let m = matrix.len();
-        let n = matrix[0].len();
+        }
 
-        let mut left = vec![0; n]; // initialize left as the leftmost boundary possible
-        let mut right = vec![n; n];
-        let mut height = vec![0; n];
+        let height = matrix.len();
+        let width = matrix[0].len();
 
-        let mut maxarea = 0;
-        for i in 0..m {
-            let mut cur_left = 0;
-            let mut cur_right = n;
-            // update height
-            for j in 0..n {
-                if matrix[i][j] == '1' {
-                    height[j] += 1;
+        let mut max_area = 0;
+        let mut heights = vec![0; width];
+        let mut left = vec![0; width];
+        let mut right = vec![width; width];
+
+        for h in 0..height {
+            for i in 0..width {
+                if matrix[h][i] == '1' {
+                    heights[i] += 1;
                 } else {
-                    height[j] = 0;
+                    heights[i] = 0;
                 }
             }
-            // update left
-            for j in 0..n {
-                if matrix[i][j] == '1' {
-                    left[j] = std::cmp::max(left[j], cur_left);
+
+            let mut left_idx = 0;
+            for i in 0..width {
+                if matrix[h][i] == '1' {
+                    left[i] = std::cmp::max(left[i], left_idx);
                 } else {
-                    left[j] = 0;
-                    cur_left = j + 1;
+                    left[i] = 0;
+                    left_idx = i + 1;
                 }
             }
-            // update right
-            for j in (0..n).rev() {
-                if matrix[i][j] == '1' {
-                    right[j] = std::cmp::min(right[j], cur_right);
+
+            let mut right_idx = width;
+            for i in (0..width).rev() {
+                if matrix[h][i] == '1' {
+                    right[i] = std::cmp::min(right[i], right_idx);
                 } else {
-                    right[j] = n;
-                    cur_right = j;
+                    right[i] = width;
+                    right_idx = i;
                 }
             }
-            // update area
-            for j in 0..n {
-                maxarea = std::cmp::max(maxarea, (right[j] - left[j]) * height[j]);
+
+            for i in 0..width {
+                max_area = std::cmp::max(max_area, (right[i] - left[i]) * heights[i]);
             }
         }
-        return maxarea as i32;
+
+        return max_area as i32;
     }
 }
 
