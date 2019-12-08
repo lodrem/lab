@@ -37,10 +37,11 @@ mod s0301;
 mod s0312;
 mod s0394;
 mod s0460;
+mod s0560;
 mod s0588;
+mod s0724;
 mod s0866;
 mod s1192;
-mod s0560;
 
 #[cfg(test)]
 mod tests {
