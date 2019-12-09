@@ -1,29 +1,25 @@
 fn generate_partial_match_table(s: &str) -> Vec<usize> {
     let bytes = s.as_bytes();
 
-    let mut partial_match_table = vec![0; s.len()];
+    let mut f = vec![0; s.len()];
 
-    let mut i = 1;
-    let mut j = 0;
-    while i < s.len() {
-        if bytes[i] == bytes[j] {
-            j += 1;
-            partial_match_table[i] = j;
-            i += 1;
-        } else if j != 0 {
-            j = partial_match_table[j - 1];
-        } else {
-            partial_match_table[i] = 0;
-            i += 1;
+    for i in 1..s.len() {
+        let mut t = f[i - 1];
+        while t > 0 && bytes[i] != bytes[t] {
+            t = f[t - 1]
         }
+        if bytes[i] == bytes[t] {
+            t += 1;
+        }
+        f[i] = t;
     }
 
-    partial_match_table
+    f
 }
 
 #[allow(dead_code)]
 pub fn search(s: &str, pat: &str) -> Vec<usize> {
-    let partial_match_table = generate_partial_match_table(pat);
+    let f = generate_partial_match_table(pat);
 
     let s = s.as_bytes();
     let pat = pat.as_bytes();
@@ -40,10 +36,10 @@ pub fn search(s: &str, pat: &str) -> Vec<usize> {
         if j == pat.len() {
             res.push(i - j);
 
-            j = partial_match_table[j - 1];
+            j = f[j - 1];
         } else if i < s.len() && s[i] != pat[j] {
             if j != 0 {
-                j = partial_match_table[j - 1];
+                j = f[j - 1];
             } else {
                 i += 1;
             }

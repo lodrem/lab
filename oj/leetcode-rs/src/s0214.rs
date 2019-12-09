@@ -2,70 +2,60 @@ pub struct Solution;
 
 #[allow(dead_code)]
 impl Solution {
-    fn fix_palindrome(s: &str, mut i: i32, mut j: i32) -> Option<String> {
-        let bytes = s.as_bytes();
-        let mut res = String::new();
+    fn brute_force(s: String) -> String {
+        let rev: String = s.chars().rev().collect();
 
-        if i == j {
-            res.push_str(&s[i as usize..(i + 1) as usize]);
-            i -= 1;
-            j += 1;
-        }
-
-        while i >= 0 || j < s.len() as i32 {
-            if i >= 0 && j < s.len() as i32 {
-                if bytes[i as usize] != bytes[j as usize] {
-                    return None;
-                }
-                let i = i as usize;
-                let j = j as usize;
-                res.insert_str(0, &s[i..i + 1]);
-                res.push_str(&s[j..j + 1]);
-            } else if i >= 0 {
-                let i = i as usize;
-                res.insert_str(0, &s[i..i + 1]);
-            } else {
-                let j = j as usize;
-                res.push_str(&s[j..j + 1]);
+        // 1. find **prefix** longest palindrome string slice
+        // => is_palindrome(s[0..i])
+        // => s[0..i] == rev(s[0..i])
+        // => s[0..i] == rev[n-i..]
+        // 2. shortest palindrome
+        // => rev(s[i..n]) + s
+        // => rev[0..i] + s
+        for i in 0..s.len() {
+            if &s[0..s.len() - i] == &rev[i..] {
+                let mut res = rev[0..i].to_owned();
+                res.push_str(&s);
+                return res;
             }
-            i -= 1;
-            j += 1;
+        }
+        "".to_owned()
+    }
+
+    fn kmp(s: String) -> String {
+        let rev: String = s.chars().rev().collect();
+
+        // Build longest palindrome with magic char '#'
+        let c = {
+            let mut c = String::with_capacity(s.len() * 2 + 1);
+            c.push_str(&s);
+            c.push('#');
+            c.push_str(&rev);
+            c
+        };
+        let b = c.as_bytes();
+        let mut f = vec![0; c.len()];
+
+        for i in 1..c.len() {
+            let mut t = f[i - 1];
+            while t > 0 && b[i] != b[t] {
+                t = f[t - 1];
+            }
+            if b[i] == b[t] {
+                t += 1;
+            }
+            f[i] = t;
         }
 
-        Some(res)
+        let mut res = rev[0..s.len() - f[c.len() - 1]].to_owned();
+        res.push_str(&s);
+
+        res
     }
 
     pub fn shortest_palindrome(s: String) -> String {
-        // p = 2 / 2 = 1 [0, 1]
-        // p = 3 / 2 = 1 [0, 1, 2]
-        let p = s.len() / 2;
-        let mut offset = 0;
-
-        while p + (offset as usize) < s.len() {
-            let p = p as i32;
-            if let Some(res) = Self::fix_palindrome(&s, p - offset, p - offset) {
-                return res;
-            }
-            if offset > 0 {
-                if let Some(res) = Self::fix_palindrome(&s, p + offset, p + offset) {
-                    return res;
-                }
-            }
-            if p - offset - 1 >= 0 {
-                if let Some(res) = Self::fix_palindrome(&s, p - offset - 1, p - offset) {
-                    return res;
-                }
-            }
-
-            if p + offset + 1 < s.len() as i32 {
-                if let Some(res) = Self::fix_palindrome(&s, p + offset, p + offset + 1) {
-                    return res;
-                }
-            }
-            offset += 1;
-        }
-
-        "".to_owned()
+        // Self::brute_force(s)
+        Self::kmp(s)
     }
 }
 
