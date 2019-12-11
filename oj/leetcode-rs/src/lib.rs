@@ -38,6 +38,7 @@ mod s0273;
 mod s0301;
 mod s0312;
 mod s0336;
+mod s0344;
 mod s0394;
 mod s0460;
 mod s0560;
