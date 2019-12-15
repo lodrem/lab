@@ -49,6 +49,7 @@ mod s0560;
 mod s0588;
 mod s0724;
 mod s0866;
+mod s0937;
 mod s1192;
 
 #[cfg(test)]
