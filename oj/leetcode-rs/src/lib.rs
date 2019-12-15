@@ -18,6 +18,7 @@ mod s0031;
 mod s0032;
 mod s0038;
 mod s0039;
+mod s0040;
 mod s0041;
 mod s0042;
 mod s0046;
