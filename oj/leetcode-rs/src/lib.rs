@@ -24,6 +24,7 @@ mod s0070;
 mod s0076;
 mod s0084;
 mod s0085;
+mod s0088;
 mod s0104;
 mod s0121;
 mod s0122;
