@@ -55,6 +55,7 @@ mod s0322;
 mod s0323;
 mod s0336;
 mod s0344;
+mod s0392;
 mod s0394;
 mod s0406;
 mod s0460;
