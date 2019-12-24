@@ -69,6 +69,7 @@ mod s0767;
 mod s0866;
 mod s0937;
 mod s0953;
+mod s0977;
 mod s1029;
 mod s1099;
 mod s1192;
