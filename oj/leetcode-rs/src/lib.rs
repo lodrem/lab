@@ -68,6 +68,7 @@ mod s0714;
 mod s0724;
 mod s0763;
 mod s0767;
+mod s0860;
 mod s0866;
 mod s0937;
 mod s0953;
