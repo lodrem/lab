@@ -22,8 +22,6 @@ impl Solution {
             }
         }
 
-        println!("f = {:?}", f);
-
         res * res
     }
 }
