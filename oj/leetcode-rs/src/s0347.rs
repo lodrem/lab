@@ -14,8 +14,8 @@ impl Solution {
         let mut freq: Vec<(i32, usize)> =
             frequency_by_num.into_iter().map(|(k, v)| (k, v)).collect();
 
-        freq.sort_by_key(|(_, f)| -(*f as i32));
-        // Self::sort_top_k(&mut freq, k as usize);
+        // freq.sort_by_key(|(_, f)| -(*f as i32));
+        Self::sort_top_k(&mut freq, k as usize);
 
         freq.into_iter()
             .take(k as usize)
@@ -70,10 +70,5 @@ mod tests {
         );
 
         assert_eq!(Solution::top_k_frequent(vec![1], 1), vec![1]);
-
-        assert_eq!(
-            Solution::top_k_frequent(vec![4, 1, -1, 2, -1, 2, 3], 2),
-            vec![2, -1]
-        );
     }
 }
