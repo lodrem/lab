@@ -24,25 +24,17 @@ impl Solution {
             if start == end && start == middle {
                 start_idx += 1;
                 end_idx -= 1;
-            } else if start < end {
-                if target < middle {
-                    end_idx = mid_idx;
+            } else if start <= middle {
+                if start <= target && target < middle {
+                    end_idx = mid_idx
                 } else {
                     start_idx = mid_idx + 1;
                 }
             } else {
-                if start <= middle {
-                    if start <= target && target < middle {
-                        end_idx = mid_idx;
-                    } else {
-                        start_idx = mid_idx + 1;
-                    }
+                if middle < target && target <= end {
+                    start_idx = mid_idx + 1;
                 } else {
-                    if middle < target && target <= end {
-                        start_idx = mid_idx + 1;
-                    } else {
-                        end_idx = mid_idx;
-                    }
+                    end_idx = mid_idx
                 }
             }
         }
