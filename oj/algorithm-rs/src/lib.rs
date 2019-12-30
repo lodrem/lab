@@ -1,4 +1,5 @@
 mod kmp;
+mod sort;
 
 #[cfg(test)]
 mod tests {
