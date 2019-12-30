@@ -1,5 +1,5 @@
+mod indexing;
 mod kmp;
-mod search;
 mod sort;
 
 #[cfg(test)]
