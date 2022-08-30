@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
 	"github.com/lodrem/lab/golang/toolkit/logging"
 )
@@ -19,6 +20,8 @@ var (
 	NSGName string
 	ASG1ID  string
 	ASG2ID  string
+
+	VMSSName string
 )
 
 var (
@@ -26,6 +29,7 @@ var (
 	asgClient     *armnetwork.ApplicationSecurityGroupsClient
 	nsgClient     *armnetwork.SecurityGroupsClient
 	nsgRuleClient *armnetwork.SecurityRulesClient
+	vmssClient    *armcompute.VirtualMachineScaleSetsClient
 )
 
 func init() {
@@ -51,6 +55,12 @@ func init() {
 	nsgRuleClient, err = armnetwork.NewSecurityRulesClient(SubscriptionID, credential, nil)
 	if err != nil {
 		Logger.Error(err, "Failed to create security rules client")
+		os.Exit(1)
+	}
+
+	vmssClient, err = armcompute.NewVirtualMachineScaleSetsClient(SubscriptionID, credential, nil)
+	if err != nil {
+		Logger.Error(err, "Failed to create virtual machine scale sets client")
 		os.Exit(1)
 	}
 }
