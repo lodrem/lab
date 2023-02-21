@@ -8,7 +8,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
-	"github.com/lodrem/lab/golang/toolkit/logging"
+	"github.com/lodrem/lab/playground-go/toolkit/logging"
 )
 
 var Logger = logging.New()

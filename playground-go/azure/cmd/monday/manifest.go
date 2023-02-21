@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/printers"
 
-	"github.com/lodrem/lab/golang/azure/pkg/echoserver"
-	"github.com/lodrem/lab/golang/toolkit/ui"
+	"github.com/lodrem/lab/playground-go/azure/pkg/echoserver"
+	"github.com/lodrem/lab/playground-go/toolkit/ui"
 )
 
 func ManifestCmd() *cobra.Command {

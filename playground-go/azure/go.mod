@@ -1,4 +1,4 @@
-module github.com/lodrem/lab/golang/azure
+module github.com/lodrem/lab/playground-go/azure
 
 go 1.19
 
@@ -7,7 +7,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute v1.0.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork v1.1.0
 	github.com/Azure/go-autorest/autorest/to v0.4.0
-	github.com/lodrem/lab/golang/toolkit v0.0.0-20220825023839-465f337a9b4a
+	github.com/lodrem/lab/playground-go/toolkit v0.0.0-20220825023839-465f337a9b4a
 	github.com/spf13/cobra v1.5.0
 	k8s.io/api v0.25.0
 	k8s.io/apimachinery v0.25.0
