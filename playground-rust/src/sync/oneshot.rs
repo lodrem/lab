@@ -1,5 +1,4 @@
 use std::cell::UnsafeCell;
-use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering::{Acquire, Release};
@@ -9,14 +8,19 @@ use std::thread::Thread;
 
 pub struct Sender<T> {
     inner: Arc<Inner<T>>,
-    receiving_thread: Thread,
 }
 
 impl<T> Sender<T> {
     pub fn send(self, message: T) {
         unsafe { (*self.inner.value.get()).write(message) };
         self.inner.ready.store(true, Release);
-        self.receiving_thread.unpark();
+
+        if self.inner.receiving.load(Acquire) {
+            let receiving_thread =
+                unsafe { (*self.inner.receiving_thread.get()).assume_init_read() };
+            receiving_thread.unpark();
+            println!("send to {:?}", receiving_thread.id());
+        }
     }
 }
 
@@ -26,6 +30,9 @@ pub struct Receiver<T> {
 
 impl<T> Receiver<T> {
     pub fn receive(self) -> T {
+        println!("recv from {:?}", thread::current().id());
+        unsafe { (*self.inner.receiving_thread.get()).write(thread::current()) };
+        self.inner.receiving.store(true, Release);
         while !self.inner.ready.swap(false, Acquire) {
             thread::park();
         }
@@ -36,6 +43,8 @@ impl<T> Receiver<T> {
 struct Inner<T> {
     value: UnsafeCell<MaybeUninit<T>>,
     ready: AtomicBool,
+    receiving: AtomicBool,
+    receiving_thread: UnsafeCell<MaybeUninit<Thread>>,
 }
 
 unsafe impl<T> Sync for Inner<T> where T: Send {}
@@ -52,12 +61,13 @@ pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
     let inner = Arc::new(Inner {
         value: UnsafeCell::new(MaybeUninit::uninit()),
         ready: AtomicBool::new(false),
+        receiving: AtomicBool::new(false),
+        receiving_thread: UnsafeCell::new(MaybeUninit::uninit()),
     });
 
-    std::sync::mpsc::channel()(
+    (
         Sender {
             inner: inner.clone(),
-            receiving_thread: thread::current(),
         },
         Receiver { inner },
     )
@@ -69,9 +79,11 @@ fn test() {
     thread::scope(|s| {
         s.spawn(|| {
             tx.send(42);
+            println!("sent");
         });
         s.spawn(|| {
             assert_eq!(rx.receive(), 42);
+            println!("received");
         });
-    })
+    });
 }
