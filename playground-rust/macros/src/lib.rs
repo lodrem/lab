@@ -1,4 +1,5 @@
 mod builder;
+mod custom_debug;
 
 use proc_macro::TokenStream;
 use quote::quote;
@@ -45,5 +46,12 @@ pub fn show_streams(attr: TokenStream, item: TokenStream) -> TokenStream {
 pub fn derive_builder(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let output = builder::builder_impl(input);
+    TokenStream::from(output)
+}
+
+#[proc_macro_derive(CustomDebug, attributes(format))]
+pub fn derive_custom_debug(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let output = custom_debug::custom_debug_impl(input);
     TokenStream::from(output)
 }
