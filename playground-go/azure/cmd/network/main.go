@@ -1,27 +1,19 @@
 package main
 
 import (
-	"context"
-	"flag"
 	"os"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
+
 	"github.com/lodrem/lab/playground-go/toolkit/logging"
 )
 
 var Logger = logging.New()
 
 var (
-	SubscriptionID string
-	ResourceGroup  string
-
-	NSGName string
-	ASG1ID  string
-	ASG2ID  string
-
-	VMSSName string
+	SubscriptionID string = "8ecadfc9-d1a3-4ea4-b844-0d9f87e4d7c8"
 )
 
 var (
@@ -30,6 +22,7 @@ var (
 	nsgClient     *armnetwork.SecurityGroupsClient
 	nsgRuleClient *armnetwork.SecurityRulesClient
 	vmssClient    *armcompute.VirtualMachineScaleSetsClient
+	vmssVMClient  *armcompute.VirtualMachineScaleSetVMsClient
 )
 
 func init() {
@@ -63,27 +56,13 @@ func init() {
 		Logger.Error(err, "Failed to create virtual machine scale sets client")
 		os.Exit(1)
 	}
+	vmssVMClient, err = armcompute.NewVirtualMachineScaleSetVMsClient(SubscriptionID, credential, nil)
+	if err != nil {
+		Logger.Error(err, "Failed to create virtual machine scale set vms client")
+		os.Exit(1)
+	}
 }
 
 func main() {
-	var function string
-
-	flag.StringVar(&SubscriptionID, "subscription-id", "", "Subscription ID")
-	flag.StringVar(&ResourceGroup, "resource-group", "", "Resource Group")
-	flag.StringVar(&function, "function", "", "Function to run")
-	flag.StringVar(&NSGName, "nsg-name", "", "NSG Name")
-	flag.StringVar(&ASG1ID, "asg-1-id", "", "ASG 1 ID")
-	flag.StringVar(&ASG2ID, "asg-2-id", "", "ASG 2 ID")
-	flag.Parse()
-
-	ctx := context.Background()
-	var err error
-	switch function {
-	case "create-security-rule-for-asg":
-		err = CreateSecurityRuleForASG(ctx)
-	}
-	if err != nil {
-		Logger.Error(err, "Failed to run function")
-		os.Exit(1)
-	}
+	Test()
 }
