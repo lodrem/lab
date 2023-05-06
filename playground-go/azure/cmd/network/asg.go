@@ -44,6 +44,16 @@ func MustDeleteASG(ctx context.Context, resourceGroup, asgName string) {
 	}
 }
 
+func MustGetVMSS(ctx context.Context, resourceGroup, vmssName string) armcompute.VirtualMachineScaleSet {
+	resp, err := vmssClient.Get(ctx, resourceGroup, vmssName, nil)
+	if err != nil {
+		Logger.Error(err, "Failed to get VMSS", "vmss-name", vmssName)
+		os.Exit(1)
+	}
+
+	return resp.VirtualMachineScaleSet
+}
+
 func MustUpdateVMSSWithASGs(ctx context.Context, resourceGroup, vmssName string, asgIDs []string) {
 	Logger.Info("Updating VMSS", "vmss-name", vmssName)
 	asgs := make([]*armcompute.SubResource, 0, len(asgIDs))
@@ -53,29 +63,9 @@ func MustUpdateVMSSWithASGs(ctx context.Context, resourceGroup, vmssName string,
 		})
 	}
 
-	poller, err := vmssClient.BeginUpdate(ctx, resourceGroup, vmssName, armcompute.VirtualMachineScaleSetUpdate{
-		Properties: &armcompute.VirtualMachineScaleSetUpdateProperties{
-			VirtualMachineProfile: &armcompute.VirtualMachineScaleSetUpdateVMProfile{
-				NetworkProfile: &armcompute.VirtualMachineScaleSetUpdateNetworkProfile{
-					NetworkInterfaceConfigurations: []*armcompute.VirtualMachineScaleSetUpdateNetworkConfiguration{
-						{
-							Name: to.Ptr("jialuncai-vnet-nic01"),
-							Properties: &armcompute.VirtualMachineScaleSetUpdateNetworkConfigurationProperties{
-								IPConfigurations: []*armcompute.VirtualMachineScaleSetUpdateIPConfiguration{
-									{
-										Name: to.Ptr("jialuncai-vnet-nic01-defaultIpConfiguration"),
-										Properties: &armcompute.VirtualMachineScaleSetUpdateIPConfigurationProperties{
-											ApplicationSecurityGroups: asgs,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}, nil)
+	vmss := MustGetVMSS(ctx, resourceGroup, vmssName)
+	vmss.Properties.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations[0].Properties.IPConfigurations[0].Properties.ApplicationSecurityGroups = asgs
+	poller, err := vmssClient.BeginCreateOrUpdate(ctx, resourceGroup, vmssName, vmss, nil)
 	if err != nil {
 		Logger.Error(err, "Failed to begin update VMSS", "vmss-name", vmssName, "asg-ids", asgIDs)
 		os.Exit(1)
@@ -92,6 +82,16 @@ func MustUpdateVMSSWithASGs(ctx context.Context, resourceGroup, vmssName string,
 	}
 }
 
+func MustGetVMSSInstance(ctx context.Context, resourceGroup, vmssName, instanceID string) armcompute.VirtualMachineScaleSetVM {
+	resp, err := vmssVMClient.Get(ctx, resourceGroup, vmssName, instanceID, nil)
+	if err != nil {
+		Logger.Error(err, "Failed to get VMSS Instance", "vmss-name", vmssName, "instance-id", instanceID)
+		os.Exit(1)
+	}
+
+	return resp.VirtualMachineScaleSetVM
+}
+
 func MustUpdateVMSSInstanceWithASGs(ctx context.Context, resourceGroup, vmssName, instanceID string, asgIDs []string) {
 	Logger.Info("Updating VMSS Instance", "vmss-name", vmssName, "instance-id", instanceID)
 	asgs := make([]*armcompute.SubResource, 0, len(asgIDs))
@@ -100,27 +100,11 @@ func MustUpdateVMSSInstanceWithASGs(ctx context.Context, resourceGroup, vmssName
 			ID: to.Ptr(asgID),
 		})
 	}
-	poller, err := vmssVMClient.BeginUpdate(ctx, resourceGroup, vmssName, instanceID, armcompute.VirtualMachineScaleSetVM{
-		Properties: &armcompute.VirtualMachineScaleSetVMProperties{
-			NetworkProfileConfiguration: &armcompute.VirtualMachineScaleSetVMNetworkProfileConfiguration{
-				NetworkInterfaceConfigurations: []*armcompute.VirtualMachineScaleSetNetworkConfiguration{
-					{
-						Name: to.Ptr("jialuncai-vnet-nic01"),
-						Properties: &armcompute.VirtualMachineScaleSetNetworkConfigurationProperties{
-							IPConfigurations: []*armcompute.VirtualMachineScaleSetIPConfiguration{
-								{
-									Name: to.Ptr("jialuncai-vnet-nic01-defaultIpConfiguration"),
-									Properties: &armcompute.VirtualMachineScaleSetIPConfigurationProperties{
-										ApplicationSecurityGroups: asgs,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}, nil)
+
+	vm := MustGetVMSSInstance(ctx, resourceGroup, vmssName, instanceID)
+	vm.Properties.NetworkProfileConfiguration.NetworkInterfaceConfigurations[0].Properties.IPConfigurations[0].Properties.ApplicationSecurityGroups = asgs
+
+	poller, err := vmssVMClient.BeginUpdate(ctx, resourceGroup, vmssName, instanceID, vm, nil)
 	if err != nil {
 		Logger.Error(err, "Failed to begin update VMSS Instance", "vmss-name", vmssName, "instance-id", instanceID, "asg-ids", asgIDs)
 		os.Exit(1)
@@ -147,15 +131,15 @@ func Test() {
 
 	Logger.Info("Starting...")
 
-	MustCreateASG(ctx, Location, ResourceGroup, ASG1Name)
-	MustCreateASG(ctx, Location, ResourceGroup, ASG2Name)
+	asgID1 := MustCreateASG(ctx, Location, ResourceGroup, ASG1Name)
+	asgID2 := MustCreateASG(ctx, Location, ResourceGroup, ASG2Name)
 
 	for i := 0; i < math.MaxUint32; i++ {
 		targetASGName := fmt.Sprintf("target-asg-%d", i)
 		targetASGID := MustCreateASG(ctx, Location, ResourceGroup, targetASGName)
 
 		MustUpdateVMSSWithASGs(ctx, ResourceGroup, VMSSName, []string{targetASGID})
-		MustUpdateVMSSWithASGs(ctx, ResourceGroup, VMSSName, []string{ASG1Name, ASG2Name})
+		MustUpdateVMSSWithASGs(ctx, ResourceGroup, VMSSName, []string{asgID1, asgID2})
 		MustDeleteASG(ctx, ResourceGroup, targetASGName)
 	}
 }
