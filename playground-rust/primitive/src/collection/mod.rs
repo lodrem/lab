@@ -1,2 +1,2 @@
-mod linkedlist;
-mod trie;
+pub mod linkedlist;
+pub mod trie;
