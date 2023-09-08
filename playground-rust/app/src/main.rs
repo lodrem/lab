@@ -1,6 +1,6 @@
 use tokio::runtime::Builder;
-use tracing::info;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tracing::{info, span, Level};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 #[tracing::instrument]
 fn foo() {
@@ -9,7 +9,7 @@ fn foo() {
     fib(5);
 }
 
-#[tracing::instrument(fields(magic = 42), ret)]
+#[tracing::instrument(level = "trace", fields(magic = 42), ret)]
 fn bar() {}
 
 #[tracing::instrument]
@@ -35,6 +35,14 @@ fn fib(n: usize) -> usize {
     seq.0
 }
 
+thread_local! {
+    static CONTEXT: u64 = {
+        println!("Hello, world");
+        panic!("fuck");
+        42
+    }
+}
+
 fn main() {
     let rt = Builder::new_multi_thread()
         .enable_all()
@@ -43,14 +51,21 @@ fn main() {
         .build()
         .expect("build threaded runtime");
 
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "app=debug".into()),
-        ))
-        .with(tracing_subscriber::fmt::layer())
-        .init();
+    {
+        let filter = EnvFilter::from_default_env()
+            .add_directive("app=trace".parse().expect("valid directive"));
+        let format = tracing_subscriber::fmt::layer().pretty();
+
+        tracing_subscriber::registry()
+            .with(filter)
+            .with(format)
+            .init();
+    }
 
     rt.block_on(async move {
+        let span = span!(Level::INFO, "runtime main");
+        let _enter = span.enter();
+
         info!("hello, world");
         foo();
         bar();

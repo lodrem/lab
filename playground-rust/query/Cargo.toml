@@ -5,6 +5,6 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-datafusion = "19.0"
-sqlparser = "0.31"
-tokio = { version = "1.26", features = ["full"] }
+datafusion = "24.0"
+sqlparser = "0.34"
+tokio = { version = "1.28", features = ["full"] }
