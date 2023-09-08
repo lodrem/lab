@@ -1,0 +1,11 @@
+default:
+  just --list
+
+build:
+  CGO_ENABLED=0 go build -o bin/turing ./...
+
+run: build
+  ./bin/turing
+
+image:
+  docker build -t turing:latest -f docker/build/Dockerfile .
