@@ -22,6 +22,19 @@ services:
     ports:
       - "9090:9090"
 
+  mimir:
+    image: grafana/mimir:latest
+    command: ["mimir", "--config.file=/etc/mimir/config.yaml"]
+    volumes:
+      - ./config/mimir/config.yaml:/etc/mimir/config.yaml
+    ports:
+      - "9009:9009"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+
   turing:
     image: turing:latest
     ports:
